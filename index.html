@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Employee Management System</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Employee<span>MS</span></h1>
+    <div id="session" hidden>
+      <span id="whoami"></span>
+      <button id="logout" type="button" class="btn btn-secondary">Log out</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Login -->
+    <section id="login-view" class="card narrow">
+      <h2>Sign in</h2>
+      <form id="login-form" autocomplete="on">
+        <label>Username
+          <input id="login-username" name="username" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+        </label>
+        <p id="login-error" class="error" role="alert" hidden></p>
+        <button class="btn" type="submit">Sign in</button>
+      </form>
+    </section>
+
+    <!-- Admin -->
+    <section id="admin-view" hidden>
+      <nav class="tabs" aria-label="Sections">
+        <button type="button" class="tab active" data-tab="employees">Employees</button>
+        <button type="button" class="tab" data-tab="attendance">Attendance</button>
+      </nav>
+
+      <div id="tab-employees">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search name, email or username" aria-label="Search">
+          <input id="department-filter" type="text" placeholder="Department" aria-label="Department filter">
+          <button id="add-employee" type="button" class="btn">+ Add employee</button>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr><th>Name</th><th>Username</th><th>Department</th><th>Title</th><th>Role</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="employee-rows"></tbody>
+          </table>
+          <p id="employee-empty" class="muted" hidden>No employees match.</p>
+        </div>
+        <div class="pager">
+          <button id="prev-page" type="button" class="btn btn-secondary">Previous</button>
+          <span id="page-info" class="muted"></span>
+          <button id="next-page" type="button" class="btn btn-secondary">Next</button>
+        </div>
+      </div>
+
+      <div id="tab-attendance" hidden>
+        <form id="mark-form" class="card toolbar">
+          <label>Employee <select id="mark-employee" required></select></label>
+          <label>Date <input id="mark-date" type="date" required></label>
+          <label>Status
+            <select id="mark-status">
+              <option value="PRESENT">Present</option>
+              <option value="ABSENT">Absent</option>
+              <option value="LEAVE">Leave</option>
+            </select>
+          </label>
+          <button class="btn" type="submit">Save attendance</button>
+        </form>
+
+        <form id="filter-form" class="card toolbar">
+          <label>Employee <select id="filter-employee"></select></label>
+          <label>From <input id="filter-from" type="date"></label>
+          <label>To <input id="filter-to" type="date"></label>
+          <button class="btn btn-secondary" type="submit">Load</button>
+        </form>
+
+        <p id="admin-summary" class="summary" hidden></p>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Employee</th><th>Status</th></tr></thead>
+            <tbody id="attendance-rows"></tbody>
+          </table>
+          <p id="attendance-empty" class="muted" hidden>No records in this range.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Employee -->
+    <section id="employee-view" hidden>
+      <div class="card">
+        <h2>My profile</h2>
+        <dl id="profile" class="profile"></dl>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <h2>My attendance</h2>
+          <button id="check-in" type="button" class="btn">Check in for today</button>
+        </div>
+        <p id="my-summary" class="summary" hidden></p>
+        <table>
+          <thead><tr><th>Date</th><th>Status</th></tr></thead>
+          <tbody id="my-attendance-rows"></tbody>
+        </table>
+        <p id="my-attendance-empty" class="muted" hidden>No attendance recorded in the last 30 days.</p>
+      </div>
+
+      <form id="password-form" class="card narrow-form">
+        <h2>Change password</h2>
+        <label>Current password
+          <input id="current-password" type="password" autocomplete="current-password" required>
+        </label>
+        <label>New password (min. 8 characters)
+          <input id="new-password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required>
+        </label>
+        <button class="btn" type="submit">Update password</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Add / edit employee -->
+  <dialog id="employee-dialog">
+    <form id="employee-form">
+      <h2 id="dialog-title">Add employee</h2>
+      <div class="grid">
+        <label id="username-field">Username
+          <input id="f-username" minlength="3" maxlength="50" pattern="[A-Za-z0-9._\-]+">
+        </label>
+        <label id="password-field">Password (min. 8 characters)
+          <input id="f-password" type="password" minlength="8" maxlength="72" autocomplete="new-password">
+        </label>
+        <label>Full name <input id="f-fullName" maxlength="120" required></label>
+        <label>Email <input id="f-email" type="email" maxlength="150" required></label>
+        <label>Department <input id="f-department" maxlength="80"></label>
+        <label>Job title <input id="f-jobTitle" maxlength="80"></label>
+        <label>Salary <input id="f-salary" type="number" min="0" step="0.01"></label>
+        <label>Join date <input id="f-joinDate" type="date" required></label>
+        <label>Role
+          <select id="f-role">
+            <option value="EMPLOYEE">Employee</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </label>
+        <label id="enabled-field" class="checkbox"><input id="f-enabled" type="checkbox" checked> Account enabled</label>
+        <label id="reset-field">Reset password (optional)
+          <input id="f-newPassword" type="password" minlength="8" maxlength="72" autocomplete="new-password">
+        </label>
+      </div>
+      <p id="dialog-error" class="error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" id="dialog-cancel" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
